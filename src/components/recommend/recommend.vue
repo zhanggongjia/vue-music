@@ -52,14 +52,6 @@ export default {
   }
 };
 </script>
-<style>
-
-</style>
-<style>
-.con-silder {
-  color: #ffffff;
-}
-</style>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
 .con-silder {
