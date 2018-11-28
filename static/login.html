@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>登陆的页面</title>
+</head>
+<body>
+    用户名 ： <input type="text" name="" value="13838184488" id="username"> </br>
+    密码 ： <input type="password" name="" value="123456" id="password">
+    <button id="btn">登陆</button>
+<script src="jquery.js"></script>
+<script>
+    
+    //点击登陆
+    $('#btn').on('click',function(){
+
+      //获取登陆账号
+      var username = $('#username').val();
+      var password = $('#password').val();
+      $.ajax({
+        url: ' http://app.ye885.com/public/index.php/index/response_api/login.html',
+        type: 'post',
+        data: {
+          appid: 101523396,
+          username: username ,
+          password: password 
+        },
+        success: function(res) {
+          if(res.info == 'ok') {
+          
+            var userarray = sessionStorage.getItem('userarray') // 获取缓存的所有数据
+
+            var  user = {                     //用户个人信息 可能含有图像等等个人信息  
+                    username: username,
+                    appid: 101523396,
+                    password: password 
+                }
+             if(!!userarray) {
+                  if(userarray.length>0) {
+                    var s = 0;
+                    for(var i=0; i<userarray.length; i++) {
+                      if(userarray[i].username==username) { // 如果缓存已经有登陆的这个人的信息 应该换掉， 不能一直push
+                        userarray[i] = user                    //正常清空的登陆会返回登陆信息， 因为信息有变化直接替换。。。。。这里值比较少  
+                      }else{
+                        s++
+                      }
+                    } 
+                  }
+                  if(userarray.length<1 ||userarray.length===s) {
+                    var userarray = []
+                    userarray.push(user);
+                    console.log(userarray);
+                    
+                  }
+             }
+            sessionStorage.setItem("userarray", JSON.stringify(userarray));
+            location.href = './index.html?username='+username
+          }
+        },
+        error: function(err) {
+          console.log(err)
+        }
+      })
+    })
+</script>
+</body>
+</html>

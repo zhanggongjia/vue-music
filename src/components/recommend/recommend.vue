@@ -52,6 +52,12 @@ export default {
   }
 };
 </script>
+<style>
+  h3 {
+    color: #000;
+  }
+</style>
+
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
 .con-silder {

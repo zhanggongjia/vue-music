@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>我是登陆成功后的页面</title>
+  <style>
+    h2 {
+      text-align: center;
+    }
+    span {
+      float: right;
+    }
+    #btn {
+      color: red;
+      
+      cursor: pointer;
+    }
+    
+    #btn:hover {
+      color: brown;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>切换账号</h2>
+
+  <div id="user">
+
+  </div>
+
+  <script src="jquery.js"></script>
+  <script>
+    var username = location.search.substring(10);
+    console.log(username);
+    $('#spn').html(username)
+    //切换账号
+    $('#btn').on('click', function () {
+       location.href = './toggle.html?username='+username
+    })
+  </script>
+</body>
+
+</html>
