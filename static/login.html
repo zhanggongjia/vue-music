@@ -30,12 +30,14 @@
         success: function(res) {
           if(res.info == 'ok') {
           
-            var userarray = sessionStorage.getItem('userarray') // 获取缓存的所有数据
+            var userarray = JSON.parse(sessionStorage.getItem('userarray')) // 获取缓存的所有数据
+            console.log(userarray);
 
-            var  user = {                     //用户个人信息 可能含有图像等等个人信息  
+            var  user = {                     //用户个人信息 可能含有 res返回的图像，utoken等个人信息  
                     username: username,
                     appid: 101523396,
-                    password: password 
+                    password: password,
+                    utoken : res.data.utoken
                 }
              if(!!userarray) {
                   if(userarray.length>0) {
@@ -48,15 +50,17 @@
                       }
                     } 
                   }
-                  if(userarray.length<1 ||userarray.length===s) {
-                    var userarray = []
+                  if(userarray.length===s) {
                     userarray.push(user);
+                  }
+                  if(userarray.length<1) {  //如果缓存里面的没有数据或者是， 缓存里面的数据没有 你登陆的这跳信息就定义新的数组
+                     var userarray = []
+                     userarray.push(user);
                     console.log(userarray);
-                    
                   }
              }
             sessionStorage.setItem("userarray", JSON.stringify(userarray));
-            location.href = './index.html?username='+username
+            location.href = './index.html?username='+username+'&utoken='+res.data.utoken
           }
         },
         error: function(err) {

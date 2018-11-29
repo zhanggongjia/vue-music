@@ -32,15 +32,20 @@
   <span>-------</span>
   <span id="spn"></span>
   <span>用户：</span>
-
+  <span id="utoken"></span>
+  <span>utoken：</span>
   <script src="jquery.js"></script>
   <script>
-    var username = location.search.substring(10);
+    var username = location.search.substring(1).split("&")[0].split('=')[1]; //
+    var utoken = location.search.substring(1).split("&")[1].split('=')[1]; //
+    
     console.log(username);
+    console.log(utoken); //这个页面 拿到utoken 可以去获取用户信息！！！
     $('#spn').html(username)
+    $('#utoken').html(utoken)
     //切换账号
     $('#btn').on('click', function () {
-       location.href = './toggle.html?username='+username
+       location.href = './toggle.html'
     })
   </script>
 </body>

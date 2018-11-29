@@ -10,18 +10,30 @@
     h2 {
       text-align: center;
     }
-    span {
-      float: right;
-    }
-    #btn {
-      color: red;
-      
-      cursor: pointer;
-    }
-    
-    #btn:hover {
-      color: brown;
-    }
+   #user {
+     float: left;
+     height: 150px;
+   }
+   .dv {
+     height: 100%;
+     float: left;
+     width: 110px;
+     background-color: pink;
+     margin: 0 15px;
+     cursor: pointer;
+   }
+   .add {
+     height: 150px;
+     float: left;
+     width: 80px;
+     background-color: pink;
+     margin: 0 15px;
+     text-align: center;
+     cursor: pointer;
+   }
+   .add p {
+     font-size: 36px; 
+   }
   </style>
 </head>
 
@@ -32,16 +44,83 @@
   <div id="user">
 
   </div>
+  <div class="add">
+      <p>+</p>
+      <span>重新登陆</span>
+  </div>
 
   <script src="jquery.js"></script>
   <script>
-    var username = location.search.substring(10);
-    console.log(username);
-    $('#spn').html(username)
-    //切换账号
-    $('#btn').on('click', function () {
-       location.href = './toggle.html?username='+username
-    })
+          var userarray = JSON.parse(sessionStorage.getItem('userarray')); // 获取缓存的所有 用户， 拼接在页面
+          console.log(userarray)
+          var html = '';
+          for(var i=0; i<userarray.length; i++) {
+            html +='<div class="dv" data-username="'+userarray[i].username+'" data-password="'+userarray[i].password+'"> '
+            html += '<p>用户: </p>'
+            html += '<span>'+userarray[i].username+'</span>'
+            html += '<p>点我登陆</p>'
+            html +='</div>'
+          }
+          $('#user').html(html);
+          $('.add').on('click',function () {
+            location.href = './login.html'
+          })
+          $('#user').on('click','.dv',function () {    //点击用户登陆 获取用户名和密码
+            var username = $(this).data('username');    //因为有可能在其他设备改了密码，，所以要掉登陆的接口
+            var password = $(this).data('password');
+            console.log(username);
+            console.log(password);
+            
+            //以下接口和登陆页面的 登陆方法一样我直接拿过来的。
+            $.ajax({
+                url: ' http://app.ye885.com/public/index.php/index/response_api/login.html',
+                type: 'post',
+                data: {
+                  appid: 101523396,
+                  username: username ,
+                  password: password 
+                },
+                success: function(res) {
+                  if(res.info == 'ok') {
+                  
+                    var userarray = JSON.parse(sessionStorage.getItem('userarray')) // 获取缓存的所有数据
+                    console.log(userarray);
+
+                    var  user = {                     //用户个人信息 可能含有 res返回的图像，utoken等个人信息  
+                            username: username,
+                            appid: 101523396,
+                            password: password,
+                            utoken : res.data.utoken
+                        }
+                    if(!!userarray) {
+                          if(userarray.length>0) {
+                            var s = 0;
+                            for(var i=0; i<userarray.length; i++) {
+                              if(userarray[i].username==username) { // 如果缓存已经有登陆的这个人的信息 应该换掉， 不能一直push
+                                userarray[i] = user                    //正常清空的登陆会返回登陆信息， 因为信息有变化直接替换。。。。。这里值比较少  
+                              }else{
+                                s++
+                              }
+                            } 
+                          }
+                          if(userarray.length===s) {
+                            userarray.push(user);
+                          }
+                          if(userarray.length<1) {  //如果缓存里面的没有数据或者是， 缓存里面的数据没有 你登陆的这跳信息就定义新的数组
+                            var userarray = []
+                            userarray.push(user);
+                            console.log(userarray);
+                          }
+                    }
+                    sessionStorage.setItem("userarray", JSON.stringify(userarray));
+                    location.href = './index.html?username='+username+'&utoken='+res.data.utoken
+                  }
+                },
+                error: function(err) {
+                  console.log(err)
+                }
+              })
+          })
   </script>
 </body>
 
