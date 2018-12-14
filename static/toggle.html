@@ -17,7 +17,7 @@
    .dv {
      height: 100%;
      float: left;
-     width: 110px;
+     width: 120px;
      background-color: pink;
      margin: 0 15px;
      cursor: pointer;
@@ -25,7 +25,7 @@
    .add {
      height: 150px;
      float: left;
-     width: 80px;
+     width: 100px;
      background-color: pink;
      margin: 0 15px;
      text-align: center;
@@ -33,6 +33,20 @@
    }
    .add p {
      font-size: 36px; 
+   }
+   .active {
+     background:peru;
+   }
+   .dv i {
+     width: 8px;
+     height: 8px;
+     border-radius: 8px;
+     display: none;
+     background: palegreen; 
+  
+   }
+   .dv.active i {
+    display: inline-block;
    }
   </style>
 </head>
@@ -51,17 +65,24 @@
 
   <script src="jquery.js"></script>
   <script>
-          var userarray = JSON.parse(sessionStorage.getItem('userarray')); // 获取缓存的所有 用户， 拼接在页面
+          var username =  location.search.substring(10)
+          var userarray = JSON.parse(localStorage.getItem('userarray')); // 获取缓存的所有 用户， 拼接在页面
           console.log(userarray)
+          console.log(username)
           var html = '';
           for(var i=0; i<userarray.length; i++) {
-            html +='<div class="dv" data-username="'+userarray[i].username+'" data-password="'+userarray[i].password+'"> '
-            html += '<p>用户: </p>'
+            var active = '';
+            if(userarray[i].username==username) {
+              active = 'active'
+            }
+            html +='<div class="dv '+active+'" data-username="'+userarray[i].username+'" data-password="'+userarray[i].password+'"> '
+            html += '<p>用户: </p><i></i>'
             html += '<span>'+userarray[i].username+'</span>'
             html += '<p>点我登陆</p>'
             html +='</div>'
           }
           $('#user').html(html);
+
           $('.add').on('click',function () {
             location.href = './login.html'
           })
@@ -81,9 +102,10 @@
                   password: password 
                 },
                 success: function(res) {
+         
                   if(res.info == 'ok') {
                   
-                    var userarray = JSON.parse(sessionStorage.getItem('userarray')) // 获取缓存的所有数据
+                    var userarray = JSON.parse(localStorage.getItem('userarray')) // 获取缓存的所有数据
                     console.log(userarray);
 
                     var  user = {                     //用户个人信息 可能含有 res返回的图像，utoken等个人信息  
@@ -96,7 +118,7 @@
                           if(userarray.length>0) {
                             var s = 0;
                             for(var i=0; i<userarray.length; i++) {
-                              if(userarray[i].username==username) { // 如果缓存已经有登陆的这个人的信息 应该换掉， 不能一直push
+                              if(userarray[i].utoken==res.data.utoken){ // 如果缓存已经有登陆的这个人的信息 应该换掉， 不能一直push
                                 userarray[i] = user                    //正常清空的登陆会返回登陆信息， 因为信息有变化直接替换。。。。。这里值比较少  
                               }else{
                                 s++
@@ -112,7 +134,7 @@
                             console.log(userarray);
                           }
                     }
-                    sessionStorage.setItem("userarray", JSON.stringify(userarray));
+                    localStorage.setItem("userarray", JSON.stringify(userarray));
                     location.href = './index.html?username='+username+'&utoken='+res.data.utoken
                   }
                 },

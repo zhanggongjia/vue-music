@@ -28,9 +28,10 @@
           password: password 
         },
         success: function(res) {
+
           if(res.info == 'ok') {
           
-            var userarray = JSON.parse(sessionStorage.getItem('userarray')) // 获取缓存的所有数据
+            var userarray = JSON.parse(localStorage.getItem('userarray')) // 获取缓存的所有数据
             console.log(userarray);
 
             var  user = {                     //用户个人信息 可能含有 res返回的图像，utoken等个人信息  
@@ -39,12 +40,16 @@
                     password: password,
                     utoken : res.data.utoken
                 }
+             if(userarray==null) {
+                userarray = []; 
+                userarray.push(user);
+             }     
              if(!!userarray) {
                   if(userarray.length>0) {
                     var s = 0;
                     for(var i=0; i<userarray.length; i++) {
-                      if(userarray[i].username==username) { // 如果缓存已经有登陆的这个人的信息 应该换掉， 不能一直push
-                        userarray[i] = user                    //正常清空的登陆会返回登陆信息， 因为信息有变化直接替换。。。。。这里值比较少  
+                      if(userarray[i].username== username) { // utokens是唯一标识， userarray[i].utoken是缓存的utoken是缓存的，res.data.utoken是后台返回的utoken
+                         userarray[i] = user                    //正常清空的登陆会返回登陆信息， 因为信息有变化直接替换。。。。。这里值比较少  
                       }else{
                         s++
                       }
@@ -54,12 +59,12 @@
                     userarray.push(user);
                   }
                   if(userarray.length<1) {  //如果缓存里面的没有数据或者是， 缓存里面的数据没有 你登陆的这跳信息就定义新的数组
-                     var userarray = []
+                     userarray = []
                      userarray.push(user);
-                    console.log(userarray);
                   }
              }
-            sessionStorage.setItem("userarray", JSON.stringify(userarray));
+             console.log(userarray);
+            localStorage.setItem("userarray", JSON.stringify(userarray));
             location.href = './index.html?username='+username+'&utoken='+res.data.utoken
           }
         },
